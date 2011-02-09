@@ -19,6 +19,7 @@ module ActiveShippingExtension
         Calculator::Ups::NextDayAirEarlyAm,
         Calculator::Ups::NextDayAirSaver,
         Calculator::Ups::Saver,
+        Calculator::Ups::Standard,
         Calculator::Ups::SecondDayAir,
         Calculator::Ups::ThreeDaySelect,
         Calculator::Ups::WorldwideExpedited,
