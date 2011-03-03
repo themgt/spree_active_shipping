@@ -187,13 +187,22 @@ module Spree
              response = ssl_post("https://www.ups.com/ups.app/xml/TimeInTransit", "<?xml version=\"1.0\"?>"+access_request+"<?xml version=\"1.0\"?>"+rate_request)
              parse_time_in_transit_response(origin, destination, packages,response, options)
           end
-
+          
+          def ups_log(name, text)
+            @timestamp = Time.now.to_i if name == :req # FIXME
+            
+            File.open(File.join(Rails.root, 'tmp', "ups-#{@timestamp}_#{name}.xml"), 'w') { |f| f << text }
+          end
+          
           def find_rates(origin, destination, packages, options={})
             origin, destination = upsified_location(origin), upsified_location(destination)
             options = @options.merge(options)
             packages = Array(packages)
             access_request = build_access_request
             rate_request = build_rate_request(origin, destination, packages, options)
+            
+            ups_log(:req, access_request + rate_request)
+            
             response = commit(:rates, save_request(access_request + rate_request), (options[:test] || false))
             parse_rate_response(origin, destination, packages, response, options)
           end
@@ -240,6 +249,7 @@ module Spree
 
           def parse_rate_response(origin, destination, packages, response, options={})
             rates = []
+            ups_log :res, response
             xml = REXML::Document.new(response)
             success = response_success?(xml)
             message = response_message(xml)
