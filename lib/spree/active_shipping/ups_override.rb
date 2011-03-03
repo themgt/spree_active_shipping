@@ -191,7 +191,10 @@ module Spree
           def ups_log(name, text)
             @timestamp = Time.now.to_i if name == :req # FIXME
             
-            File.open(File.join(Rails.root, 'tmp', "ups-#{@timestamp}_#{name}.xml"), 'w') { |f| f << text }
+            directory = File.join(Rails.root, 'tmp', 'ups')
+            FileUtils.mkdir_p(directory)
+            
+            File.open(File.join(directory, "#{@timestamp}_#{name}.xml"), 'w') { |f| f << text }
           end
           
           def find_rates(origin, destination, packages, options={})
